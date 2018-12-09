@@ -2,7 +2,7 @@
  * @Author: coderqiqin@aliyun.com 
  * @Date: 2018-12-09 14:30:18 
  * @Last Modified by: CoderQiQin
- * @Last Modified time: 2018-12-09 19:18:24
+ * @Last Modified time: 2018-12-09 19:42:41
  */
 var gulp         = require('gulp'),
     browerSync   = require('browser-sync').create(),
@@ -76,7 +76,7 @@ gulp.task('sass', function() {
           suffix: '.min'
         }))
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest(paths.sass.src))
+        .pipe(gulp.dest(paths.sass.dist))
         .pipe(filter('**/*.css'))
         .pipe(reload({stream: true}));
 })
