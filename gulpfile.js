@@ -2,7 +2,7 @@
  * @Author: coderqiqin@aliyun.com 
  * @Date: 2018-12-09 14:30:18 
  * @Last Modified by: CoderQiQin
- * @Last Modified time: 2018-12-09 19:42:41
+ * @Last Modified time: 2018-12-09 23:15:27
  */
 var gulp         = require('gulp'),
     browerSync   = require('browser-sync').create(),
@@ -16,7 +16,8 @@ var gulp         = require('gulp'),
     pug          = require('gulp-pug'),
     browserify   = require('browserify'),
     uglify       = require('gulp-uglify'),
-    del          = require('del');
+    del          = require('del')
+    zip          = require('gulp-zip');
 // 捕获错误
 var plumber = require('gulp-plumber'),
     notify  = require('gulp-notify')
@@ -58,6 +59,7 @@ gulp.task('default', ['sass', 'pug', 'browserify', 'image'], function() {
   gulp.watch('src/css/**/*.scss', ['sass'])
   gulp.watch('src/*.pug', ['pug'])
   gulp.watch('src/js/**/*.js', ['browserify'])
+  gulp.watch('src/img/**/*', ['image'])
 })
 
 gulp.task('sass', function() {
@@ -116,21 +118,19 @@ gulp.task('browserify', function() {
         .pipe(reload({ stream: true }))
 })
 
-gulp.task('image', function() {
+gulp.task('image', () => {
   return gulp.src(paths.image.src)
         .pipe(gulp.dest(paths.image.dist))
 })
 
 // TODO: 默认任务,先同步执行clean/dist
-gulp.task('clean', function() {
-  return del('dist/')
-})
+gulp.task('clean', () => del('dist/'))
 
-gulp.task('lib', function() {
-  return gulp.src(paths.lib.src)
-        .pipe(gulp.dest(paths.lib.dist))
-})
+gulp.task('lib', () => gulp.src(paths.lib.src).pipe(gulp.dest(paths.lib.dist)))
 
-gulp.task('build', function() {
-  // return gulp.src('')
+gulp.task('build', () => {
+  var project = process.cwd().split('/')
+  return gulp.src('dist/**/*')
+        .pipe(zip(project[project.length-1] + '.zip'))
+        .pipe(gulp.dest('./'))
 })
