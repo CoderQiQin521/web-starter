@@ -2,7 +2,7 @@
  * @Author: coderqiqin@aliyun.com 
  * @Date: 2018-12-09 14:30:18 
  * @Last Modified by: CoderQiQin
- * @Last Modified time: 2018-12-09 17:53:15
+ * @Last Modified time: 2018-12-09 19:18:24
  */
 var gulp         = require('gulp'),
     browerSync   = require('browser-sync').create(),
@@ -21,6 +21,31 @@ var gulp         = require('gulp'),
 var plumber = require('gulp-plumber'),
     notify  = require('gulp-notify')
 
+var paths = {
+  sass: {
+    src: 'src/css/**/*.+(scss|sass)',
+    dist: 'dist/css',
+    watch: ''
+  },
+  pug: {
+    src: 'src/*.pug',
+    dist: 'dist',
+    watch: ''
+  },
+  bowerserify: {
+    src: 'src/js/**/*.js',
+    dist: 'dist/js'
+  },
+  image: {
+    src: 'src/img/**/*.{jpg,png,gif,ico}',
+    dist: 'dist/img'
+  },
+  lib: {
+    src: 'src/lib/**/*',
+    dist: 'dist/lib'
+  }
+}
+
 gulp.task('default', ['sass', 'pug', 'browserify', 'image'], function() {
   browerSync.init({
     server: {
@@ -36,7 +61,7 @@ gulp.task('default', ['sass', 'pug', 'browserify', 'image'], function() {
 })
 
 gulp.task('sass', function() {
-  return gulp.src('src/css/**/*.+(scss|sass)')
+  return gulp.src(paths.sass.src)
         .pipe(plumber({
           errorHandler: notify.onError({
             title: 'SASS编译报错:',
@@ -51,7 +76,7 @@ gulp.task('sass', function() {
           suffix: '.min'
         }))
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('dist/css'))
+        .pipe(gulp.dest(paths.sass.src))
         .pipe(filter('**/*.css'))
         .pipe(reload({stream: true}));
 })
@@ -62,7 +87,7 @@ gulp.task('pug', function(){
     message: 'This app is powered by gulp.pug recipe for BrowserSync'
   };
 
-  return gulp.src('src/*.pug')
+  return gulp.src(paths.pug.src)
         .pipe(plumber({
           errorHandler: notify.onError({
             title: 'PUG编译报错:',
@@ -73,13 +98,13 @@ gulp.task('pug', function(){
           pretty: true,
           locals: YOUR_LOCALS
         }))
-        .pipe(gulp.dest('dist'))
+        .pipe(gulp.dest(paths.pug.dist))
         .pipe(reload({ stream: true }))
 })
 
 // TODO: es6转换,browserify
 gulp.task('browserify', function() {
-  return gulp.src('src/js/**/*.js')
+  return gulp.src(paths.bowerserify.src)
         .pipe(plumber({
           errorHandler: notify.onError({
             title: 'JS编译报错:',
@@ -87,16 +112,25 @@ gulp.task('browserify', function() {
           })
         }))
         .pipe(uglify())
-        .pipe(gulp.dest('dist/js'))
+        .pipe(gulp.dest(paths.bowerserify.dist))
         .pipe(reload({ stream: true }))
 })
 
 gulp.task('image', function() {
-  return gulp.src('src/img/**/*.{jpg,png,gif,ico}')
-        .pipe(gulp.dest('dist/img'))
+  return gulp.src(paths.image.src)
+        .pipe(gulp.dest(paths.image.dist))
 })
 
 // TODO: 默认任务,先同步执行clean/dist
 gulp.task('clean', function() {
   return del('dist/')
+})
+
+gulp.task('lib', function() {
+  return gulp.src(paths.lib.src)
+        .pipe(gulp.dest(paths.lib.dist))
+})
+
+gulp.task('build', function() {
+  // return gulp.src('')
 })
