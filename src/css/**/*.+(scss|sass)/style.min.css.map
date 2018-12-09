@@ -1,0 +1,1 @@
+{"version":3,"sources":["_reset.scss","style.scss"],"names":[],"mappings":"AAAA,KACE,QAAA,KCAF,KACE,WAAA,KACA,UAAA","file":"style.min.css","sourcesContent":["body {\n  padding: 30px;\n}\n","@import 'reset';\nbody{\n  background: #dddddd;\n  font-size: 35px;\n}"]}
