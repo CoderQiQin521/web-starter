@@ -1,4 +1,7 @@
 node_modules/
+bower_components/
+
 dist/
+src/lib
 package-lock.json
 **/*.zip

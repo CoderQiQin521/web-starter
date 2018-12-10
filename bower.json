@@ -1,0 +1,20 @@
+{
+  "name": "web-starter",
+  "private": true,
+  "authors": [
+    "coderqiqin@aliyun.com"
+  ],
+  "license": "ISC",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src/lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "3.3.7",
+    "jquery": "3.3.1"
+  }
+}

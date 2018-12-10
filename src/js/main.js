@@ -1,4 +1,0 @@
-$(function() {
-  // code here...
-
-})
