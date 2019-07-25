@@ -2,7 +2,7 @@
  * @Author: coderqiqin@aliyun.com 
  * @Date: 2018-12-09 14:30:18 
  * @Last Modified by: CoderQiQin
- * @Last Modified time: 2018-12-10 11:01:27
+ * @Last Modified time: 2019-07-25 11:59:12
  */
 var gulp         = require('gulp'),
     browerSync   = require('browser-sync').create(),
@@ -18,7 +18,8 @@ var gulp         = require('gulp'),
     watchify     = require('watchify'),
     buffer       = require('vinyl-buffer'),
     source       = require('vinyl-source-stream'),
-    assign       = require('lodash.assign'),
+    tsify        = require('tsify'),
+    assign       = require('lodash').assign,
     gutil        = require('gulp-util'),
     uglify       = require('gulp-uglify'),
     del          = require('del')
@@ -37,12 +38,12 @@ var paths = {
   pug: {
     src: 'src/*.pug',
     dist: 'dist',
-    watch: 'src/*.pug'
+    watch: 'src/**/*.pug'
   },
-  bowerserify: {
-    src: 'src/js/**/*.js',
+  typescript: {
+    src: 'src/js/**/*.ts',
     dist: 'dist/js',
-    watch: 'src/js/**/*.js'
+    watch: 'src/js/**/*.ts'
   },
   image: {
     src: 'src/img/**/*.{jpg,png,gif,ico}',
@@ -59,18 +60,53 @@ var paths = {
   }
 }
 
-gulp.task('default', ['sass', 'pug', 'browserify', 'image'], function() {
+gulp.task('default', ['sass', 'pug', 'tsc', 'image'], function() {
   browerSync.init({
     server: {
       baseDir: 'dist'
-    }
+    },
+    middleware: [
+      {
+        route: "/api",
+        handle: function (req, res, next) {
+          // handle any requests at /api
+          console.log(res);
+        }
+      }
+    ]
   }, function(){
     console.log('少年,开始撸代码吧!');
   })
 
   gulp.watch(paths.sass.watch, ['sass'])
   gulp.watch(paths.pug.watch, ['pug'])
+  gulp.watch(paths.typescript.watch, ['tsc'])
   gulp.watch(paths.image.watch, ['image'])
+})
+
+gulp.task('tsc', function() {
+  return browserify({
+            basedir: '.',
+            debug: true,
+            entries: ['src/js/main.ts'],
+            cache: {},
+            packageCache: {}
+        })
+        .plugin(tsify)
+        .bundle()
+        .pipe(source('bundle.js'))
+        .pipe(gulp.dest(paths.typescript.dist))
+        .pipe(reload({stream: true}));
+  // return tsProject.src(paths.typescript.src)
+  //       .pipe(plumber({
+  //         errorHandler: notify.onError({
+  //           title: 'TypeScript编译报错:',
+  //           message: '<%= error.message %>'
+  //         })
+  //       }))
+  //       .pipe(tsProject())
+  //       .pipe(gulp.dest('dist/js'))
+  //       .pipe(reload({stream: true}));
 })
 
 gulp.task('sass', function() {
@@ -99,7 +135,6 @@ gulp.task('pug', function(){
   var YOUR_LOCALS = {
     message: 'This app is powered by gulp.pug recipe for BrowserSync'
   };
-
   return gulp.src(paths.pug.src)
         .pipe(plumber({
           errorHandler: notify.onError({
@@ -114,37 +149,6 @@ gulp.task('pug', function(){
         .pipe(gulp.dest(paths.pug.dist))
         .pipe(reload({ stream: true }))
 })
-
-var customOpts = {
-  entries: ['src/js/entry.js'],
-  debug: true
-}
-var opts = assign({}, watchify.args, customOpts)
-var b = watchify(browserify(opts))
-// TODO: es6转换
-gulp.task('browserify', () => {
-  return bundle()
-})
-b.on('update', bundle)
-
-function bundle() {
-  return b.bundle()
-        .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-        // .pipe(plumber({
-        //   errorHandler: notify.onError({
-        //     title: 'JS编译报错:',
-        //     message: '<%= error.message %>'
-        //   })
-        // }))
-        .pipe(source('main.js'))
-        .pipe(buffer())
-        // .pipe(uglify())
-        .pipe(sourcemaps.init({ loadMaps: true }))
-        .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest(paths.bowerserify.dist))
-        .pipe(filter('**/*.js'))
-        .pipe(reload({ stream: true }))
-}
 
 gulp.task('image', () => {
   return gulp.src(paths.image.src)
