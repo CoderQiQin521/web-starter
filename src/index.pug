@@ -2,4 +2,10 @@ extends components/layout.pug
 block content
   h1= message
   include components/item.pug
-  div 123abc
+  div 12312
+  //注释
+  //- 不显示
+  ul
+    each item in [{name: 'haha', id: 1},{name: '嗯问问群', id: 2}]
+      li
+        h2(title="动态属性"+item.id)= item.name
